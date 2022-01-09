@@ -40,6 +40,7 @@ class Lexer:
             elif self.current_char in speciel_keys:
                 token = Defenitions.Token(speciel_type_of_tokens[speciel_keys.index(self.current_char)])
                 tokens.append(token)
+                self.advance()
             # if token is not in that list
             else:
                 return [], Defenitions.IllegalCharError(self.pos, self.pos, "'{}'".format(self.current_char))

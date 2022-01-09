@@ -53,6 +53,9 @@ class Token:
         self.value = value
 
     def __repr__(self):
-        return '{}:{}'.format(self.type, self.value)
+        if self.value:
+            return '{}:{}'.format(self.type, self.value)
+        else:
+            return '{}'.format(self.type)
 
 
