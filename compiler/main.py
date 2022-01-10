@@ -1,8 +1,11 @@
 from lexer import Lexer
+from Praser import Parser
+while True:
+    lexer = Lexer("SDTIN",input("basic>"))
+    tokens = lexer.create_tokens()
+    parser = Parser(tokens)
 
-lexer = Lexer("file", "1.2 + 5")
-tokens = lexer.create_tokens()
-print(tokens)
+    print(parser.parse())
 
 
 

@@ -59,3 +59,23 @@ class Token:
             return '{}'.format(self.type)
 
 
+# defenitions for the par
+#
+#
+# ser
+class NumberNode:
+    def __init__(self, token):
+        self.token = token
+
+    def __repr__(self):
+        return '{}'.format(self.token)
+
+
+class BinaryOpNode:
+    def __init__(self, left_node, op_token, right_node):
+        self.left_node = left_node
+        self.op_token = op_token
+        self.right_node = right_node
+
+    def __repr__(self):
+        return "({} {} {})".format(self.left_node, self.op_token, self.right_node)

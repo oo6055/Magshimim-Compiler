@@ -1,30 +1,53 @@
-class Number():
-    def __init__(self, value):
-        self.value = value
+import Defenitions
 
-    def eval(self):
-        return int(self.value)
+class Parser:
+    def __init__(self, tokens):
+        self.tokens = tokens
+        self.index = -1
+        self.advance()
+
+    def advance(self):
+        self.index += 1
+        if self.index < len(self.tokens):
+            self.current = self.tokens[self.index]
+        return self.current
+
+    def parse(self):
+        result = self.expr()
+        return result
+
+    def factor(self):
+        token = self.current
+
+        if token.type in [Defenitions.TT_RPAREN]:
+            self.advance()
+            return Defenitions.
+        if token.type in [Defenitions.TT_FLOAT, Defenitions.TT_INT]:
+            self.advance()
+            return Defenitions.NumberNode(token)
+
+    def term(self):
+        left = self.factor()
+
+        while self.current.type in [Defenitions.TT_MUL, Defenitions.TT_DIV]:
+            token = self.current
+            self.advance()
+            right = self.factor()
+            left = Defenitions.BinaryOpNode(left, token, right)
+
+        return left # in case that there is no number
 
 
-class BinaryOp():
-    def __init__(self, left, right):
-        self.left = left
-        self.right = right
+    def expr(self):
+        left = self.term()
+
+        while self.current.type in [Defenitions.TT_PLUS, Defenitions.TT_MINUS]:
+            token = self.current
+            self.advance()
+            right = self.term()
+            left = Defenitions.BinaryOpNode(left, token, right)
+
+        return left  # in case that there is no number
 
 
-class Add(BinaryOp):
-    def eval(self):
-        return self.left.eval() + self.right.eval()
 
-
-class Sub(BinaryOp):
-    def eval(self):
-        return self.left.eval() - self.right.eval()
-
-
-class Print():
-    def __init__(self, value):
-        self.value = value
-
-    def eval(self):
-        print(self.value.eval())
