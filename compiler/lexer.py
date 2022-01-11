@@ -38,18 +38,21 @@ class Lexer:
                 token = self.tokenize_number()
                 tokens.append(token)
             elif self.current_char in speciel_keys:
-                token = Defenitions.Token(speciel_type_of_tokens[speciel_keys.index(self.current_char)])
+                token = Defenitions.Token(speciel_type_of_tokens[speciel_keys.index(self.current_char)],pos_start=self.pos.__copy__(),pos_end= self.pos.__copy__())
                 tokens.append(token)
                 self.advance()
             # if token is not in that list
             else:
-                return [], Defenitions.IllegalCharError(self.pos, self.pos, "'{}'".format(self.current_char))
+                return [], Defenitions.IllegalCharError(self.pos.__copy__(), self.pos.__copy__(), "'{}'".format(self.current_char))
+
+        tokens.append(Defenitions.Token(Defenitions.TT_EOF, pos_start=self.pos.__copy__(),pos_end= self.pos.__copy__()))
         return tokens
 
 
 
     def tokenize_number(self):
         num_str = ""
+        pos_start = self.pos.__copy__()
 
         # maybe it can be a float
         while self.pos.index < len(self.text) and re.match("[0-9.]", self.current_char):
@@ -62,6 +65,6 @@ class Lexer:
 
         if "." in num_str:
 
-            return Defenitions.Token(Defenitions.TT_FLOAT, float(num_str))
+            return Defenitions.Token(Defenitions.TT_FLOAT, float(num_str), pos_start, self.pos)
         else:
-            return Defenitions.Token(Defenitions.TT_INT, int(num_str))
+            return Defenitions.Token(Defenitions.TT_INT, int(num_str), pos_start.__copy__(), self.pos.__copy__())

@@ -1,5 +1,31 @@
 import Defenitions
 
+class ParserOutput():
+    def __init__(self, error = None, node = None):
+        self.error = error
+        self.node = node
+
+    def check(self, res):
+        if isinstance(res, ParserOutput):
+            if res.error:
+                self.error = res.error
+                return res.node
+
+        return res
+
+        return self
+
+
+    def success(self, node):
+        self.node = node
+        return self
+
+
+    def fail(self, error):
+        self.error = error
+        return self
+
+
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -17,37 +43,65 @@ class Parser:
         return result
 
     def factor(self):
+        res = ParserOutput()
         token = self.current
 
-        if token.type in [Defenitions.TT_RPAREN]:
-            self.advance()
-            return Defenitions.
+        # need to handle with
         if token.type in [Defenitions.TT_FLOAT, Defenitions.TT_INT]:
-            self.advance()
-            return Defenitions.NumberNode(token)
+            res.check(self.advance())
+            return res.success(Defenitions.NumberNode(token))
+        if token.type in [Defenitions.TT_PLUS, Defenitions.TT_MINUS]:
+            op_token = self.current
+            res.check(self.advance())
+            node = res.check(self.factor())
+
+            if res.error:
+                return res
+
+            return res.success(Defenitions.UnaryOpNode(op_token, node))
+        if token.type == Defenitions.TT_LPAREN:
+            res.check(self.advance())
+            expr = res.check(self.expr())
+
+            if self.current.type == Defenitions.TT_RPAREN:
+                res.check(self.advance())
+                return expr
+            else:
+                return (res.fail(Defenitions.InvalidSyntaxError(
+					self.current.pos_start.__copy__(), self.current.pos_end.__copy__(),
+					"Expected ')'")))
+
+
 
     def term(self):
-        left = self.factor()
+        res = ParserOutput()
+
+        left = res.check(self.factor())
 
         while self.current.type in [Defenitions.TT_MUL, Defenitions.TT_DIV]:
             token = self.current
-            self.advance()
-            right = self.factor()
+            res.check(self.advance())
+            right = res.check(self.factor())
+            if res.error:
+                return res
             left = Defenitions.BinaryOpNode(left, token, right)
 
-        return left # in case that there is no number
+        return res.success(left) # in case that there is no number
 
 
     def expr(self):
-        left = self.term()
+        res = ParserOutput()
+        left = res.check(self.term())
 
         while self.current.type in [Defenitions.TT_PLUS, Defenitions.TT_MINUS]:
             token = self.current
-            self.advance()
-            right = self.term()
+            res.check(self.advance())
+            right = res.check(self.term())
+            if res.error:
+                return res
             left = Defenitions.BinaryOpNode(left, token, right)
 
-        return left  # in case that there is no number
+        return res.success(left)  # in case that there is no number
 
 
 

@@ -4,8 +4,11 @@ while True:
     lexer = Lexer("SDTIN",input("basic>"))
     tokens = lexer.create_tokens()
     parser = Parser(tokens)
-
-    print(parser.parse())
+    output = parser.parse()
+    if output.error:
+        print(output.error)
+    else:
+        print(output.node)
 
 
 
