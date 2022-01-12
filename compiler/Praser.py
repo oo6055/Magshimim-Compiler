@@ -15,6 +15,9 @@ class ParserOutput():
 
         return self
 
+    def __repr__(self):
+        return "{}".format(self.node)
+
 
     def success(self, node):
         self.node = node
