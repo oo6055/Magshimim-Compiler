@@ -1,14 +1,18 @@
 from lexer import Lexer
+import Defenitions
 from Praser import Parser
 while True:
     lexer = Lexer("SDTIN",input("basic>"))
     tokens = lexer.create_tokens()
-    parser = Parser(tokens)
-    output = parser.parse()
-    if output.error:
-        print(output.error)
+    if isinstance(tokens, Defenitions.Error):
+        print(tokens)
     else:
-        print(output.node)
+        parser = Parser(tokens)
+        output = parser.parse()
+        if output.error:
+            print(output.error)
+        else:
+            print(output.node)
 
 
 

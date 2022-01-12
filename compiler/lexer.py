@@ -43,7 +43,7 @@ class Lexer:
                 self.advance()
             # if token is not in that list
             else:
-                return [], Defenitions.IllegalCharError(self.pos.__copy__(), self.pos.__copy__(), "'{}'".format(self.current_char))
+                return Defenitions.IllegalCharError(self.pos.__copy__(), self.pos.__copy__(), "'{}'".format(self.current_char))
 
         tokens.append(Defenitions.Token(Defenitions.TT_EOF, pos_start=self.pos.__copy__(),pos_end= self.pos.__copy__()))
         return tokens
