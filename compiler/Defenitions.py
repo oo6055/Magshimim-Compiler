@@ -26,6 +26,10 @@ class IllegalCharError(Error):
     def __init__(self, pos_start, pos_end, details):
         super().__init__(pos_start, pos_end, 'Illegal Character', details)
 
+class InvalidSyntaxError(Error):
+    def __init__(self, pos_start, pos_end, details):
+        super().__init__(pos_start, pos_end, 'Invalid Syntax', details)
+
 
 class Position:
     def __init__(self, index, line, column, fn, ftxt):
@@ -46,11 +50,19 @@ class Position:
 
         return self
 
+    def __repr__(self):
+        return "{}".format(self.index)
+
+    def __copy__(self):
+        return Position(self.index, self.line, self.column, self.fn, self.ftxt)
+
 
 class Token:
-    def __init__(self, type, value = None):
+    def __init__(self, type, value = None, pos_start =  None, pos_end = None):
         self.type = type
         self.value = value
+        self.pos_start = pos_start
+        self.pos_end = pos_end
 
     def __repr__(self):
         if self.value:
@@ -59,3 +71,35 @@ class Token:
             return '{}'.format(self.type)
 
 
+# defenitions for the par
+#
+#
+# ser
+class NumberNode:
+    def __init__(self, token):
+        self.token = token
+
+    def __repr__(self):
+        return '{}'.format(self.token)
+
+
+class BinaryOpNode:
+    def __init__(self, left_node, op_token, right_node):
+        self.left_node = left_node
+        self.op_token = op_token
+        self.right_node = right_node
+
+    def __repr__(self):
+        return "({} {} {})".format(self.left_node, self.op_token, self.right_node)
+
+class UnaryOpNode:
+    def __init__(self, op_token, number_node):
+        self.op_token = op_token
+        self.number_node = number_node
+
+    def __repr__(self):
+        return "({} {})".format(self.op_token, self.number_node)
+
+class Number():
+    def __init__(self):
+        self.value

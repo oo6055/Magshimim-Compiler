@@ -1,8 +1,18 @@
 from lexer import Lexer
-
-lexer = Lexer("file", "1.2 + 5")
-tokens = lexer.create_tokens()
-print(tokens)
+import Defenitions
+from Praser import Parser
+while True:
+    lexer = Lexer("SDTIN",input("basic>"))
+    tokens = lexer.create_tokens()
+    if isinstance(tokens, Defenitions.Error):
+        print(tokens)
+    else:
+        parser = Parser(tokens)
+        output = parser.parse()
+        if output.error:
+            print(output.error)
+        else:
+            print(output.node)
 
 
 
