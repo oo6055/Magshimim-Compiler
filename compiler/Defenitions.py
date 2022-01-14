@@ -8,9 +8,10 @@ TT_LPAREN = 'LPAREN'
 TT_RPAREN = 'RPAREN'
 TT_EOF = 'EOF'
 TT_EQ = 'EQ'
-TT_NAME_OF_VAR = 'TT_NAME_OF_VAR'
+TT_IDENTIFIER = 'TT_NAME_OF_VAR'
 TT_KEY_WORD= 'L'
 
+KEYWORDS = ["VAR"]
 
 class Error:
     def __init__(self, pos_start, pos_end, error_name, details):
@@ -67,6 +68,9 @@ class Token:
         self.pos_start = pos_start
         self.pos_end = pos_end
 
+    def __eq__(self, other):
+        return self.type == other.type and self.value == other.value
+
     def __repr__(self):
         if self.value:
             return '{}:{}'.format(self.type, self.value)
@@ -113,13 +117,13 @@ class BinaryOpNode:
         commands += self.right_node.code_gen()
 
         if self.op_token.type in [TT_MINUS, TT_PLUS]:
-            commands += "pop ax \n" # get the right
-            commands += "pop bx \n"# get the left
+            commands += "pop bx \n" # get the right
+            commands += "pop ax \n"# get the left
             commands += self.insert_op_2_numbers(op_dict[self.op_token.type])
             commands += "push ax \n"  # get the right
         elif self.op_token.type in [TT_MUL, TT_DIV]:
-            commands += "pop ax \n" # get the right
-            commands += "pop bx \n"  # get the left
+            commands += "pop bx \n" # get the right
+            commands += "pop ax \n"  # get the left
             commands += self.insert_op_1_number(op_dict[self.op_token.type])
             commands += "push ax \n"  # get the right
 
@@ -148,6 +152,23 @@ class UnaryOpNode:
         commands += "push ax\n"
         return commands
 
-class Number:
-    def __init__(self, value):
+
+
+class DelecrationNode:
+    def __init__(self, identifier_token, value):
+        self.identifier_token = identifier_token
         self.value = value
+
+
+    def code_gen(self):
+        commands = self.identifier_token.value + " db ?\n"
+        commands += self.value.code_gen()
+        commands += "mov " + self.identifier_token.value + ", ax"
+
+
+        return commands
+
+
+    def __repr__(self):
+        return "({} {})".format(self.identifier_token, self.value)
+

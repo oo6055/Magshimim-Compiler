@@ -97,14 +97,41 @@ class Parser:
 
     def expr(self):
         res = ParserOutput()
-        left = res.check(self.term())
 
-        while self.current.type in [Defenitions.TT_PLUS, Defenitions.TT_MINUS]:
-            token = self.current
+        if self.current == Defenitions.Token(Defenitions.TT_KEY_WORD, "VAR"):
             res.check(self.advance())
-            right = res.check(self.term())
-            if res.error:
-                return res
-            left = Defenitions.BinaryOpNode(left, token, right)
+            if self.current.type == Defenitions.TT_IDENTIFIER:
+                indentifier_token = self.current
+                res.check(self.advance())
+            else:
+                return (res.fail(Defenitions.InvalidSyntaxError(
+                    self.current.pos_start.__copy__(), self.current.pos_end.__copy__(),
+                    "missing identifier")))
 
-        return res.success(left)  # in case that there is no number
+            if self.current.type == Defenitions.TT_EQ:
+                res.check(self.advance())
+            else:
+                return (res.fail(Defenitions.InvalidSyntaxError(
+					self.current.pos_start.__copy__(), self.current.pos_end.__copy__(),
+					"missing =")))
+
+            expr = res.check(self.expr())
+            if res.error:
+                return res.error
+
+            return res.success(Defenitions.DelecrationNode(indentifier_token, expr))
+
+
+
+        else:
+            left = res.check(self.term())
+
+            while self.current.type in [Defenitions.TT_PLUS, Defenitions.TT_MINUS]:
+                token = self.current
+                res.check(self.advance())
+                right = res.check(self.term())
+                if res.error:
+                    return res
+                left = Defenitions.BinaryOpNode(left, token, right)
+
+            return res.success(left)  # in case that there is no number
