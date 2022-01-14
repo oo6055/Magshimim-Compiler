@@ -7,6 +7,9 @@ TT_DIV = 'DIV'
 TT_LPAREN = 'LPAREN'
 TT_RPAREN = 'RPAREN'
 TT_EOF = 'EOF'
+TT_EQ = 'EQ'
+TT_NAME_OF_VAR = 'TT_NAME_OF_VAR'
+TT_KEY_WORD= 'L'
 
 
 class Error:
@@ -82,12 +85,45 @@ class NumberNode:
     def __repr__(self):
         return '{}'.format(self.token)
 
+    def code_gen(self):
+        commands = "mov ax, " + str(self.token.value) + "\n"
+        commands += "push ax\n"
+        return commands
+
 
 class BinaryOpNode:
     def __init__(self, left_node, op_token, right_node):
         self.left_node = left_node
         self.op_token = op_token
         self.right_node = right_node
+
+    def insert_op_2_numbers(self, op):
+        return op + " ax, bx\n"
+
+
+    def insert_op_1_number(self, op):
+        return op + " bx\n"
+
+
+    def code_gen(self):
+        op_dict = {TT_MINUS: "sub",
+                   TT_PLUS: "add",
+                   TT_MUL: "mul",
+                   TT_DIV: "div"}
+        commands = self.right_node.code_gen()
+        commands += self.left_node.code_gen()
+
+        if self.op_token.type in [TT_MINUS, TT_PLUS]:
+            commands += "pop ax \n" # get the right
+            commands += "pop bx \n"# get the left
+            commands += self.insert_op_2_numbers(op_dict[self.op_token.type])
+        elif self.op_token.type in [TT_MUL, TT_DIV]:
+            commands += "pop bx \n"  # get the left
+            commands += self.insert_op_1_number(op_dict[self.op_token.type])
+
+
+        return commands
+
 
     def __repr__(self):
         return "({} {} {})".format(self.left_node, self.op_token, self.right_node)
@@ -100,6 +136,15 @@ class UnaryOpNode:
     def __repr__(self):
         return "({} {})".format(self.op_token, self.number_node)
 
-class Number():
-    def __init__(self):
-        self.value
+    def code_gen(self):
+        commands = self.number_node.code_gen()
+
+        commands += "pop ax\n"
+        if self.op_token.type == TT_MINUS:
+            commands += "mul -1\n"
+        commands += "push ax\n"
+        return commands
+
+class Number:
+    def __init__(self, value):
+        self.value = value

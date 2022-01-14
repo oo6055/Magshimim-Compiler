@@ -1,19 +1,19 @@
 import Defenitions
 
-class ParserOutput():
+class ParserOutput:
     def __init__(self, error = None, node = None):
         self.error = error
         self.node = node
+
 
     def check(self, res):
         if isinstance(res, ParserOutput):
             if res.error:
                 self.error = res.error
-                return res.node
+            return res.node
 
         return res
 
-        return self
 
     def __repr__(self):
         return "{}".format(self.node)
@@ -49,6 +49,10 @@ class Parser:
         res = ParserOutput()
         token = self.current
 
+        if token.type == Defenitions.TT_RPAREN:
+            return (res.fail(Defenitions.InvalidSyntaxError(
+                self.current.pos_start.__copy__(), self.current.pos_end.__copy__(),
+                "Expected ')'")))
         # need to handle with
         if token.type in [Defenitions.TT_FLOAT, Defenitions.TT_INT]:
             res.check(self.advance())
@@ -73,7 +77,6 @@ class Parser:
                 return (res.fail(Defenitions.InvalidSyntaxError(
 					self.current.pos_start.__copy__(), self.current.pos_end.__copy__(),
 					"Expected ')'")))
-
 
 
     def term(self):
@@ -105,6 +108,3 @@ class Parser:
             left = Defenitions.BinaryOpNode(left, token, right)
 
         return res.success(left)  # in case that there is no number
-
-
-

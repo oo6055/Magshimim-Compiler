@@ -1,8 +1,9 @@
 from lexer import Lexer
 import Defenitions
 from Praser import Parser
+from CodeGen import CodeGen
 while True:
-    lexer = Lexer("SDTIN",input("basic>"))
+    lexer = Lexer("SDTIN",input())
     tokens = lexer.create_tokens()
     if isinstance(tokens, Defenitions.Error):
         print(tokens)
@@ -12,7 +13,7 @@ while True:
         if output.error:
             print(output.error)
         else:
-            print(output.node)
+            print(output.node.code_gen())
 
 
 
