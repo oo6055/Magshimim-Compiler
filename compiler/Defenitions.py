@@ -86,8 +86,7 @@ class NumberNode:
         return '{}'.format(self.token)
 
     def code_gen(self):
-        commands = "mov ax, " + str(self.token.value) + "\n"
-        commands += "push ax\n"
+        commands = "push " + str(self.token.value) + "\n"
         return commands
 
 
@@ -110,16 +109,20 @@ class BinaryOpNode:
                    TT_PLUS: "add",
                    TT_MUL: "mul",
                    TT_DIV: "div"}
-        commands = self.right_node.code_gen()
-        commands += self.left_node.code_gen()
+        commands = self.left_node.code_gen()
+        commands += self.right_node.code_gen()
 
         if self.op_token.type in [TT_MINUS, TT_PLUS]:
             commands += "pop ax \n" # get the right
             commands += "pop bx \n"# get the left
             commands += self.insert_op_2_numbers(op_dict[self.op_token.type])
+            commands += "push ax \n"  # get the right
         elif self.op_token.type in [TT_MUL, TT_DIV]:
+            commands += "pop ax \n" # get the right
             commands += "pop bx \n"  # get the left
             commands += self.insert_op_1_number(op_dict[self.op_token.type])
+            commands += "push ax \n"  # get the right
+
 
 
         return commands
