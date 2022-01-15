@@ -9,6 +9,7 @@ class Lexer:
         self.text = text
         self.pos = Defenitions.Position(-1, 0, -1, fn, text)
         self.current_char = None
+        self.vars = []
 
         # initiate the system
         self.advance()
@@ -26,8 +27,8 @@ class Lexer:
     def create_tokens(self):
         tokens = []
 
-        speciel_keys = ['+', '*', '-', '/', '(', ')']
-        speciel_type_of_tokens = [Defenitions.TT_PLUS, Defenitions.TT_MUL, Defenitions.TT_MINUS, Defenitions.TT_DIV, Defenitions.TT_LPAREN, Defenitions.TT_RPAREN]
+        speciel_keys = ['\n','=','+', '*', '-', '/', '(', ')']
+        speciel_type_of_tokens = [Defenitions.TT_SEMI_COLUM, Defenitions.TT_EQ, Defenitions.TT_PLUS, Defenitions.TT_MUL, Defenitions.TT_MINUS, Defenitions.TT_DIV, Defenitions.TT_LPAREN, Defenitions.TT_RPAREN]
 
         # scan the file
         while self.current_char != None:
@@ -41,6 +42,10 @@ class Lexer:
                 token = Defenitions.Token(speciel_type_of_tokens[speciel_keys.index(self.current_char)],pos_start=self.pos.__copy__(),pos_end= self.pos.__copy__())
                 tokens.append(token)
                 self.advance()
+            elif self.current_char.isalpha():
+                token = self.tokenize_identifier()
+                tokens.append(token)
+
             # if token is not in that list
             else:
                 return Defenitions.IllegalCharError(self.pos.__copy__(), self.pos.__copy__(), "'{}'".format(self.current_char))
@@ -68,3 +73,18 @@ class Lexer:
             return Defenitions.Token(Defenitions.TT_FLOAT, float(num_str), pos_start, self.pos)
         else:
             return Defenitions.Token(Defenitions.TT_INT, int(num_str), pos_start.__copy__(), self.pos.__copy__())
+
+    def tokenize_identifier(self):
+        start_pos = self.pos.__copy__()
+        current_str = ""
+        type = Defenitions.TT_IDENTIFIER
+
+
+        while self.pos.index < len(self.text) and self.current_char.isalpha():
+            current_str += self.current_char
+            self.advance()
+
+        if current_str in Defenitions.KEYWORDS:
+            type = Defenitions.TT_KEY_WORD
+
+        return Defenitions.Token(type, current_str, start_pos, self.pos)
