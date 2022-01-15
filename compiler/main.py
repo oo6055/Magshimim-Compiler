@@ -4,6 +4,7 @@ from Praser import Parser
 
 file = open("code.ori", "r")
 code = file.read()
+file.close()
 lexer = Lexer("SDTIN",code)
 tokens = lexer.create_tokens()
 print(tokens)
@@ -16,7 +17,14 @@ else:
     if output.error:
         print(output.error)
     else:
-        print(output.node.code_gen())
+        code = output.node.code_gen()
+        print(code)
+
+        file = open("code.asm", "w")
+        file.write(code)
+        file.close()
+
+
 
 
 

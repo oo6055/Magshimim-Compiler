@@ -12,6 +12,7 @@ TT_EQ = 'EQ'
 TT_IDENTIFIER = 'TT_IDENTIFIER'
 TT_KEY_WORD= 'KEY_WORD'
 
+
 KEYWORDS = ["VAR"]
 
 class Error:
