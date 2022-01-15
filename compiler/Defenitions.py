@@ -5,11 +5,12 @@ TT_MINUS = 'MINUS'
 TT_MUL = 'MUL'
 TT_DIV = 'DIV'
 TT_LPAREN = 'LPAREN'
+TT_SEMI_COLUM = 'SEMI_COLUM'
 TT_RPAREN = 'RPAREN'
 TT_EOF = 'EOF'
 TT_EQ = 'EQ'
-TT_IDENTIFIER = 'TT_NAME_OF_VAR'
-TT_KEY_WORD= 'L'
+TT_IDENTIFIER = 'TT_IDENTIFIER'
+TT_KEY_WORD= 'KEY_WORD'
 
 KEYWORDS = ["VAR"]
 
@@ -79,9 +80,6 @@ class Token:
 
 
 # defenitions for the par
-#
-#
-# ser
 class NumberNode:
     def __init__(self, token):
         self.token = token
@@ -152,8 +150,6 @@ class UnaryOpNode:
         commands += "push ax\n"
         return commands
 
-
-
 class DelecrationNode:
     def __init__(self, identifier_token, value):
         self.identifier_token = identifier_token
@@ -161,9 +157,10 @@ class DelecrationNode:
 
 
     def code_gen(self):
-        commands = self.identifier_token.value + " db ?\n"
+        commands = self.identifier_token.value + " dw ?\n"
         commands += self.value.code_gen()
-        commands += "mov " + self.identifier_token.value + ", ax"
+        commands += "pop ax\n"
+        commands += "mov " + self.identifier_token.value + ", ax\n"
 
 
         return commands
@@ -172,3 +169,24 @@ class DelecrationNode:
     def __repr__(self):
         return "({} {})".format(self.identifier_token, self.value)
 
+
+class ProgramNode:
+    def __init__(self, list_of_expr):
+        self.list_of_expr = list_of_expr
+
+    def __repr__(self):
+        represnvie_string = ""
+        for expr in self.list_of_expr:
+            represnvie_string += str(expr) + ";"
+
+        return represnvie_string
+
+
+
+
+    def code_gen(self):
+        commands = ""
+        for expr in self.list_of_expr:
+            commands += expr.code_gen()
+
+        return commands

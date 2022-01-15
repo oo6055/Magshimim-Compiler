@@ -9,6 +9,7 @@ class Lexer:
         self.text = text
         self.pos = Defenitions.Position(-1, 0, -1, fn, text)
         self.current_char = None
+        self.vars = []
 
         # initiate the system
         self.advance()
@@ -26,8 +27,8 @@ class Lexer:
     def create_tokens(self):
         tokens = []
 
-        speciel_keys = ['=','+', '*', '-', '/', '(', ')']
-        speciel_type_of_tokens = [Defenitions.TT_EQ, Defenitions.TT_PLUS, Defenitions.TT_MUL, Defenitions.TT_MINUS, Defenitions.TT_DIV, Defenitions.TT_LPAREN, Defenitions.TT_RPAREN]
+        speciel_keys = ['\n','=','+', '*', '-', '/', '(', ')']
+        speciel_type_of_tokens = [Defenitions.TT_SEMI_COLUM, Defenitions.TT_EQ, Defenitions.TT_PLUS, Defenitions.TT_MUL, Defenitions.TT_MINUS, Defenitions.TT_DIV, Defenitions.TT_LPAREN, Defenitions.TT_RPAREN]
 
         # scan the file
         while self.current_char != None:
