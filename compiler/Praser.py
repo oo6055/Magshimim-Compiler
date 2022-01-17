@@ -1,11 +1,10 @@
 import Defenitions
 
+
 class ParserOutput:
     def __init__(self, error = None, node = None):
         self.error = error
         self.node = node
-
-
 
     def check(self, res):
         if isinstance(res, ParserOutput):
@@ -15,15 +14,12 @@ class ParserOutput:
 
         return res
 
-
     def __repr__(self):
         return "{}".format(self.node)
-
 
     def success(self, node):
         self.node = node
         return self
-
 
     def fail(self, error):
         self.error = error
@@ -54,9 +50,9 @@ class Parser:
 
         while self.current.type != Defenitions.TT_EOF or self.index < len(self.tokens) and self.current.type == Defenitions.TT_SEMI_COLUM:
 
-            if expr.error:
+            if hasattr(expr, 'error') and expr.error:
                 return expr
-            res.check(self.advance())
+            self.advance()
 
             expr = res.check(self.expr())
 
@@ -79,7 +75,7 @@ class Parser:
                 "Expected ')'")))
         # need to handle with
         if token.type == Defenitions.TT_IDENTIFIER:
-            res.check(self.advance())
+            self.advance()
 
             if token.value in self.vars:
                 return res.success(Defenitions.NumberNode(token))
@@ -89,12 +85,12 @@ class Parser:
                     "undelcrated identifier")))
 
         if token.type in [Defenitions.TT_FLOAT, Defenitions.TT_INT]:
-            res.check(self.advance())
+            self.advance()
 
             return res.success(Defenitions.NumberNode(token))
         if token.type in [Defenitions.TT_PLUS, Defenitions.TT_MINUS]:
             op_token = self.current
-            res.check(self.advance())
+            self.advance()
             node = res.check(self.factor())
 
             if res.error:
@@ -102,16 +98,21 @@ class Parser:
 
             return res.success(Defenitions.UnaryOpNode(op_token, node))
         if token.type == Defenitions.TT_LPAREN:
-            res.check(self.advance())
+            self.advance()
             expr = res.check(self.expr())
 
             if self.current.type == Defenitions.TT_RPAREN:
-                res.check(self.advance())
+                self.advance()
                 return expr
             else:
                 return (res.fail(Defenitions.InvalidSyntaxError(
 					self.current.pos_start.__copy__(), self.current.pos_end.__copy__(),
 					"Expected ')'")))
+        else:
+            return (res.fail(Defenitions.InvalidSyntaxError(
+                self.current.pos_start.__copy__(), self.current.pos_end.__copy__(),
+                "invalid syntax ")))
+
 
 
     def term(self):
@@ -121,7 +122,7 @@ class Parser:
 
         while self.current.type in [Defenitions.TT_MUL, Defenitions.TT_DIV]:
             token = self.current
-            res.check(self.advance())
+            self.advance()
             right = res.check(self.factor())
             if res.error:
                 return res
@@ -134,17 +135,17 @@ class Parser:
         res = ParserOutput()
 
         if self.current == Defenitions.Token(Defenitions.TT_KEY_WORD, "VAR"):
-            res.check(self.advance())
+            self.advance()
             if self.current.type == Defenitions.TT_IDENTIFIER:
                 indentifier_token = self.current
-                res.check(self.advance())
+
             else:
                 return (res.fail(Defenitions.InvalidSyntaxError(
                     self.current.pos_start.__copy__(), self.current.pos_end.__copy__(),
                     "missing identifier")))
 
             if self.current.type == Defenitions.TT_EQ:
-                res.check(self.advance())
+                self.advance()
             else:
                 return (res.fail(Defenitions.InvalidSyntaxError(
 					self.current.pos_start.__copy__(), self.current.pos_end.__copy__(),
@@ -156,7 +157,7 @@ class Parser:
 
             self.vars.append(indentifier_token.value)
 
-            return res.success(Defenitions.DelecrationNode(indentifier_token, expr))
+            return res.success(Defenitions.DeclarationNode(indentifier_token, expr))
 
 
 
@@ -165,7 +166,6 @@ class Parser:
 
             while self.current.type in [Defenitions.TT_PLUS, Defenitions.TT_MINUS]:
                 token = self.current
-                res.check(self.advance())
                 right = res.check(self.term())
                 if res.error:
                     return res

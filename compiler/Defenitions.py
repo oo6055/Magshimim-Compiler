@@ -1,3 +1,4 @@
+# Tokens Types
 TT_INT = 'INT'
 TT_FLOAT = 'FLOAT'
 TT_PLUS = 'PLUS'
@@ -10,10 +11,11 @@ TT_RPAREN = 'RPAREN'
 TT_EOF = 'EOF'
 TT_EQ = 'EQ'
 TT_IDENTIFIER = 'TT_IDENTIFIER'
-TT_KEY_WORD= 'KEY_WORD'
-
+TT_KEY_WORD = 'KEY_WORD'
 
 KEYWORDS = ["VAR"]
+# Errors type
+
 
 class Error:
     def __init__(self, pos_start, pos_end, error_name, details):
@@ -32,19 +34,22 @@ class IllegalCharError(Error):
     def __init__(self, pos_start, pos_end, details):
         super().__init__(pos_start, pos_end, 'Illegal Character', details)
 
+
 class InvalidSyntaxError(Error):
     def __init__(self, pos_start, pos_end, details):
         super().__init__(pos_start, pos_end, 'Invalid Syntax', details)
 
 
 class Position:
+    """
+    this class used to define a position
+    """
     def __init__(self, index, line, column, fn, ftxt):
         self.index = index  # in the whole file
         self.line = line
         self.column = column
         self.fn = fn
         self.ftxt = ftxt
-
 
     def advance(self, current_char):
         self.index += 1
@@ -64,7 +69,7 @@ class Position:
 
 
 class Token:
-    def __init__(self, type, value = None, pos_start =  None, pos_end = None):
+    def __init__(self, type, value=None, pos_start=None, pos_end=None):
         self.type = type
         self.value = value
         self.pos_start = pos_start
@@ -102,37 +107,45 @@ class BinaryOpNode:
     def insert_op_2_numbers(self, op):
         return op + " ax, bx\n"
 
-
     def insert_op_1_number(self, op):
         return op + " bx\n"
-
 
     def code_gen(self):
         op_dict = {TT_MINUS: "sub",
                    TT_PLUS: "add",
                    TT_MUL: "mul",
                    TT_DIV: "div"}
+
+        # get the commands for the left (now in the stack)
         commands = self.left_node.code_gen()
+        # get the commands for the right (now in the stack)
         commands += self.right_node.code_gen()
 
+        # if the command in assembly get two operands
         if self.op_token.type in [TT_MINUS, TT_PLUS]:
-            commands += "pop bx \n" # get the right
-            commands += "pop ax \n"# get the left
+            # get the left and the right
+            commands += "pop bx \n"
+            commands += "pop ax \n"
+
+            # do the operation
             commands += self.insert_op_2_numbers(op_dict[self.op_token.type])
+
+            # push it to the stack
             commands += "push ax \n"  # get the right
         elif self.op_token.type in [TT_MUL, TT_DIV]:
-            commands += "pop bx \n" # get the right
-            commands += "pop ax \n"  # get the left
+            # get the left into ax and the right into bx
+            commands += "pop bx \n"
+            commands += "pop ax \n"
+
+            # use ax
             commands += self.insert_op_1_number(op_dict[self.op_token.type])
             commands += "push ax \n"  # get the right
 
-
-
         return commands
-
 
     def __repr__(self):
         return "({} {} {})".format(self.left_node, self.op_token, self.right_node)
+
 
 class UnaryOpNode:
     def __init__(self, op_token, number_node):
@@ -151,11 +164,11 @@ class UnaryOpNode:
         commands += "push ax\n"
         return commands
 
-class DelecrationNode:
+
+class DeclarationNode:
     def __init__(self, identifier_token, value):
         self.identifier_token = identifier_token
         self.value = value
-
 
     def code_gen(self):
         commands = self.identifier_token.value + " dw ?\n"
@@ -163,9 +176,7 @@ class DelecrationNode:
         commands += "pop ax\n"
         commands += "mov " + self.identifier_token.value + ", ax\n"
 
-
         return commands
-
 
     def __repr__(self):
         return "({} {})".format(self.identifier_token, self.value)
@@ -176,18 +187,17 @@ class ProgramNode:
         self.list_of_expr = list_of_expr
 
     def __repr__(self):
-        represnvie_string = ""
+        represent_string = ""
         for expr in self.list_of_expr:
-            represnvie_string += str(expr) + ";"
+            represent_string += str(expr) + ";"
 
-        return represnvie_string
-
-
-
+        return represent_string
 
     def code_gen(self):
-        commands = ""
+        commands = "push bp\nmov  sp, bp\n"
+
         for expr in self.list_of_expr:
             commands += expr.code_gen()
 
         return commands
+        commands += "mov bp, sp\npop bp\nret"
