@@ -24,20 +24,15 @@ def my_form_post():
     try:
 
         # Send data
-        message = b'This is the message.  It will be repeated.'
-        sock.sendall(message)
-
-
-
-
+        sock.sendall(text.encode())
 
         data = sock.recv(1024)
-        print('received "%s"' % data)
+        sock.close()
 
     finally:
         sock.close()
 
-    return render_template("index.html", code=text, content=text.upper())
+    return render_template("index.html", code=text, content=data.decode())
 
 if __name__ == "__main__":
     app.run()
