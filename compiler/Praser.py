@@ -52,7 +52,10 @@ class Parser:
         list_of_expr.append(expr)
 
 
-        while self.index < len(self.tokens) and self.current.type == Defenitions.TT_SEMI_COLUM:
+        while self.current.type != Defenitions.TT_EOF or self.index < len(self.tokens) and self.current.type == Defenitions.TT_SEMI_COLUM:
+
+            if expr.error:
+                return expr
             res.check(self.advance())
 
             expr = res.check(self.expr())
@@ -60,6 +63,7 @@ class Parser:
             if res.error:
                 return res
             list_of_expr.append(expr)
+
 
         return res.success(Defenitions.ProgramNode(list_of_expr))
 
@@ -148,7 +152,7 @@ class Parser:
 
             expr = res.check(self.expr())
             if res.error:
-                return res.error
+                return res
 
             self.vars.append(indentifier_token.value)
 

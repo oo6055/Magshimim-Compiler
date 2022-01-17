@@ -13,7 +13,6 @@ if isinstance(tokens, Defenitions.Error):
 else:
     parser = Parser(tokens)
     output = parser.parse()
-    print(output)
     if output.error:
         print(output.error)
     else:

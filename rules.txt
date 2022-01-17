@@ -1,2 +1,6 @@
-DIGIT [0-9]
-{DIGIT}
+<program> ::= <expr>*
+<expr> ::= <term>((PLUS|MINUS) term)* | KEYWORD:VAR IDENTIFIER EQ expr
+<term> ::= <factor> ((MUL|DIV) factor)*
+<factor> ::= <number>|<identifier>
+<number> ::= [0-9.]* ;only one dot
+<identifier> ::= [a-z]*
