@@ -1,1 +1,2 @@
-VAR a = 8f
+VAR a = 7
+VAR a = a - 7

@@ -160,18 +160,21 @@ class UnaryOpNode:
 
         commands += "pop ax\n"
         if self.op_token.type == TT_MINUS:
-            commands += "mul -1\n"
+            commands += "push bx\nmov bx ,-1\nmul bx\npop bx\n"
         commands += "push ax\n"
         return commands
 
 
 class DeclarationNode:
-    def __init__(self, identifier_token, value):
+    def __init__(self, identifier_token, value, first = True):
         self.identifier_token = identifier_token
         self.value = value
+        self.first = first
 
     def code_gen(self):
-        commands = self.identifier_token.value + " dw ?\n"
+        commands = ""
+        if self.first:
+            commands += self.identifier_token.value + " dw ?\n"
         commands += self.value.code_gen()
         commands += "pop ax\n"
         commands += "mov " + self.identifier_token.value + ", ax\n"
@@ -198,6 +201,5 @@ class ProgramNode:
 
         for expr in self.list_of_expr:
             commands += expr.code_gen()
-
-        return commands
         commands += "mov bp, sp\npop bp\nret"
+        return commands

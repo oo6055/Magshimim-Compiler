@@ -1,7 +1,6 @@
 from flask import Flask,render_template
 from flask import request
 import socket
-import sys
 
 app = Flask(__name__)
 

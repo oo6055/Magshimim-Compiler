@@ -23,29 +23,22 @@ while True:
     try:
         print('connection from', client_address)
 
-        # like HTTP server
         data = connection.recv(1024).decode()
 
-        data = data.replace('\r','')
-
-        print(data)
-        print("receve")
         if len(data):
-            lexer = Lexer("SDTIN", data)
+            lexer = Lexer(text=data)
             tokens = lexer.create_tokens()
-            print(tokens)
+
             if isinstance(tokens, Defenitions.Error):
                 code = str(tokens)
             else:
                 parser = Parser(tokens)
                 output = parser.parse()
-                print(output)
+
                 if output.error:
                     code = str(output.error)
                 else:
                     code = str(output.node.code_gen())
-
-
 
             print('finish.....\nsending data back to the client')
             connection.sendall(code.encode())

@@ -3,7 +3,7 @@ import Defenitions
 
 
 class Lexer:
-    def __init__(self, fn, text):
+    def __init__(self, fn = "", text= ""):
         self.fn = fn
         self.text = text
         self.pos = Defenitions.Position(-1, 0, -1, fn, text)
@@ -42,7 +42,7 @@ class Lexer:
         # scan the text
         while self.current_char is not None:
 
-            if self.current_char in " \t":
+            if self.current_char in " \t\r":
                 self.advance()
             elif re.match("[0-9]", self.current_char):  # check if it it can be a number
                 token = self.tokenize_number()
