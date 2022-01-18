@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<style>
+    textarea[name="text"]
+    {
+       	margin-right:100px;
+        margin-left:100px;
+        width:350px;
+		font-size:24px;
+        background-color: #ffffffff;
+
+        height:"700px";
+
+        border-color: #8c7979";
+    }
+    textarea[name="code"]
+    {
+    	margin-left:75px;
+        background-color: #ffffffff;
+        font-size:24px;
+        height:"700px";
+        width:350px;
+
+        border-color: #8c7979";
+    }
+    input[name="btn"]
+    {
+    	background-color: lightblue;
+        height:120px;
+        width:150px;
+        float:left;
+        margin-left:475px;
+
+
+    }
+
+    h2
+    {
+        text-align: center;
+    }
+    body {
+  background-color: #186db6;
+}
+
+</style>
+<h2>compiler</h2>
+<br>
+<br>
+	<form action="/" id="usrform" method="post">
+		<textarea name="text"rows="30" cols="40"form="usrform">{{code}}</textarea>
+    	<textarea name="code"rows="30" cols="40">{{content}}</textarea><br>
+
+    	<br>
+        <br>
+        <br>
+
+     	<input text="submit" name="btn" class="button" type="submit" value="compile" >
+    </form>
+
+
+
+
+</body>
+</html>
