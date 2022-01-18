@@ -2,11 +2,12 @@ from lexer import Lexer
 import Defenitions
 from Praser import Parser
 
+
 def main():
     file = open("code.ori", "r")
     code = file.read()
     file.close()
-    lexer = Lexer("SDTIN",code)
+    lexer = Lexer("SDTIN", code)
     tokens = lexer.create_tokens()
     print(tokens)
     if isinstance(tokens, Defenitions.Error):
