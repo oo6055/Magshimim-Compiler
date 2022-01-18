@@ -1,17 +1,21 @@
 push bp
 mov  sp, bp
-a dw ?
 push 7
-pop ax
-mov a, ax
-push a
-push 7
+push 2
+push 5
+push 3
 pop bx 
 pop ax 
-sub ax, bx
+add ax, bx
 push ax 
-pop ax
-mov a, ax
+pop bx 
+pop ax 
+mul bx
+push ax 
+pop bx 
+pop ax 
+add ax, bx
+push ax 
 mov bp, sp
 pop bp
 ret
