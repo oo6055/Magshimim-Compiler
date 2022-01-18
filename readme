@@ -1,0 +1,5 @@
+in order to use the web
+run the make file and it will build a docker.
+then run it.
+Or you can compile the client (webClient/web.py) and the server (compiler/compileServer.py).
+In other branches the input came from a file or from the input().

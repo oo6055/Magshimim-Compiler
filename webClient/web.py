@@ -11,13 +11,14 @@ def hello():
 
 @app.route('/', methods=['POST'])
 def my_form_post():
+
     text = request.form['text']
 
     # Create a TCP/IP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     # Connect the socket to the port where the server is listening
-    server_address = ('localhost', 10000)
+    server_address = ('0.0.0.0', 123)
     sock.connect(server_address)
 
     try:
@@ -34,4 +35,4 @@ def my_form_post():
     return render_template("index.html", code=text, content=data.decode())
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0", port=8000)
